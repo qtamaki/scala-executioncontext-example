@@ -8,15 +8,24 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContextExecutorService
+import scala.util.Failure
+import java.util.concurrent.ForkJoinPool
 
 object Main {
   def main(args: Array[String]) {
     defaultEC
     pattern1_UnlimitedQueue
     pattern2_LimitedQueue
-    pattern3_LimitedQueueNarrow
+    scala.util.Try(pattern3_LimitedQueueNarrow) match {
+      case Failure(e) => println("Fail!" + e.getMessage)
+      case _ => ???
+    }
     pattern4_LimitedQueueNarrow
-    pattern5_LimitedQueueNarrow
+    scala.util.Try(pattern5_LimitedQueueNarrow) match{
+      case Failure(e) => println("Fail!" + e.getMessage)
+      case _ => ???
+    }
+    pattern6_ForkJoinPool
   }
   
   def defaultEC() {
@@ -49,14 +58,20 @@ object Main {
   def pattern4_LimitedQueueNarrow() {
     val pool = new ThreadPoolExecutor(1, 3, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue[Runnable](3), new ThreadPoolExecutor.CallerRunsPolicy)
     implicit val ec = ExecutionContext.fromExecutorService(pool)
-    println("Start pattern 3 use limited queue max 3 ---------------")
+    println("Start pattern 4 CallerRunsPolicy ---------------")
     callTask
   }
 
   def pattern5_LimitedQueueNarrow() {
     val pool = new ThreadPoolExecutor(1, 3, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue[Runnable](3), new ThreadPoolExecutor.DiscardPolicy)
     implicit val ec = ExecutionContext.fromExecutorService(pool)
-    println("Start pattern 3 use limited queue max 3 ---------------")
+    println("Start pattern 5 DiscardPolicy ---------------")
+    callTask
+  }
+
+  def pattern6_ForkJoinPool() {
+    implicit val ec = ExecutionContext.fromExecutorService(new ForkJoinPool(30))
+    println("Start pattern 6 ForkJoinPool ---------------")
     callTask
   }
 
