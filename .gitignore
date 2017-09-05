@@ -1,0 +1,14 @@
+logs
+target
+.settings
+.classpath
+.project
+/.idea
+/.idea_modules
+/.cache-main
+/.cache-tests
+/RUNNING_PID
+/bin/
+/conf/local.conf
+/conf/application.test.conf
+/project/scalikejdbc.properties
